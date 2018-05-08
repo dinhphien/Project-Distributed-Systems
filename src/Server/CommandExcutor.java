@@ -30,10 +30,10 @@ public class CommandExcutor {
 
     public String excute(String s) {
         try {
-            //        String[] s1 = s.split("\\s");
-//        if (s1[0].equals("gettime")) {
-//            return getTime();
-//        }
+            String[] s1 = s.split("\\s");
+            if (s1[0].equals("gettime")) {
+                return getTime();
+            }
 //        if (s1[0].equals("pwd")) {
 //            StringBuilder sb = new StringBuilder();
 //            for (String r : rootDir) {
@@ -41,19 +41,11 @@ public class CommandExcutor {
 //            }
 //            return sb.toString();
 //        }
-//        if (s1[0].equals("cd")) {
-//            if (s1[1].equals("--")) {
-//                rootDir.remove(rootDir.size() - 1);
-//
-//            } else {
-//                rootDir.add(s1[1]+"//");
+//            if (s1[0].equals("cd")) {
+//                s = s + " "+"&cd";
+//                System.out.println(s);
+//                return proc.excute(s);
 //            }
-//            StringBuilder sb = new StringBuilder();
-//            for (String r : rootDir) {
-//                sb.append(r);
-//            }
-//            return sb.toString();
-//        }
 //        if (s1[0].equals("ls")) {
 //            StringBuilder sb = new StringBuilder();
 //            for (String r : rootDir) {

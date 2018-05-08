@@ -37,6 +37,7 @@ public class SystemCommandExecutor {
     private String adminPassword;
     private ThreadedStreamHandler inputStreamHandler;
     private ThreadedStreamHandler errorStreamHandler;
+    File file;
 
     /**
      * Pass in the system command you want to run as a List of Strings, as shown
@@ -54,12 +55,13 @@ public class SystemCommandExecutor {
      *
      * @param commandInformation The command you want to run.
      */
-    public SystemCommandExecutor(final List<String> commandInformation) {
+    public SystemCommandExecutor(final List<String> commandInformation, File file) {
         if (commandInformation == null) {
             throw new NullPointerException("The commandInformation is required.");
         }
         this.commandInformation = commandInformation;
         this.adminPassword = null;
+        this.file = file;
     }
 
     public int executeCommand()
@@ -68,10 +70,15 @@ public class SystemCommandExecutor {
 
         try {
             ProcessBuilder pb = new ProcessBuilder(commandInformation);
+//            File file = new File("c:\\xampp");
+            pb.directory(file);
+            System.out.println("d:" + file.isFile());
             System.out.println("1");
-                Process process = pb.start();
-
-
+//            File f;
+//            f = pb.directory();
+//            System.out.println(f.getAbsolutePath());
+            Process process = pb.start();
+            process.waitFor();
             // you need this if you're going to write something to the command's input stream
             // (such as when invoking the 'sudo' command, and it prompts you for a password).
             OutputStream stdOutput = process.getOutputStream();
@@ -87,7 +94,8 @@ public class SystemCommandExecutor {
             // something to it, such as with the sudo command
             inputStreamHandler = new ThreadedStreamHandler(inputStream, stdOutput, adminPassword);
             errorStreamHandler = new ThreadedStreamHandler(errorStream);
-                process.waitFor();
+
+//            System.out.println(System.getProperty("user.dir"));
             // TODO the inputStreamHandler has a nasty side-effect of hanging if the given password is wrong; fix it
             inputStreamHandler.start();
             errorStreamHandler.start();
@@ -100,6 +108,7 @@ public class SystemCommandExecutor {
 //            errorStreamHandler.interrupt();
             inputStreamHandler.join();
             errorStreamHandler.join();
+
         } catch (IOException e) {
             // TODO deal with this here, or just throw it?
             throw e;
@@ -116,14 +125,24 @@ public class SystemCommandExecutor {
      * Get the standard output (stdout) from the command you just exec'd.
      */
     public StringBuilder getStandardOutputFromCommand() {
-        return inputStreamHandler.getOutputBuffer();
+        try {
+            return inputStreamHandler.getOutputBuffer();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new StringBuilder("Check your command");
+        }
     }
 
     /**
      * Get the standard error (stderr) from the command you just exec'd.
      */
     public StringBuilder getStandardErrorFromCommand() {
-        return errorStreamHandler.getOutputBuffer();
+        try {
+            return errorStreamHandler.getOutputBuffer();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

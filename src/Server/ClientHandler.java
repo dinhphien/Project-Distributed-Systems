@@ -26,14 +26,14 @@ import javax.crypto.spec.SecretKeySpec;
  * @author T430
  */
 public class ClientHandler extends Thread {
-    
+
     static KeyPair keypair;
     static KeyPairGenerator keygen;
     static Coodinator coo;
     public static byte[] secret;
     Socket s = null;
     CommandExcutor comm;
-    
+
     public ClientHandler(Socket s) {
         this.s = s;
 //        this.dis = dis;
@@ -41,12 +41,12 @@ public class ClientHandler extends Thread {
         comm = new CommandExcutor();
         Server.upCount();
     }
-    
+
     public static void setCoo(Coodinator coo) {
         ClientHandler.coo = coo;
         System.out.println("abc");
     }
-    
+
     public void run() {
         try {
 //            coo.listen();
@@ -82,20 +82,22 @@ public class ClientHandler extends Thread {
                 byte[] b = new byte[i];
                 dis.read(b);
                 String s = new String(decrypt.doFinal(b));
+                byte[] secretMessage = null;
                 try {
                     coo.accquire();
-                    byte[] secretMessage = encrypt.doFinal(comm.excute(s).getBytes());
+                    secretMessage = encrypt.doFinal(comm.excute(s).getBytes());
                     coo.release();
-                    dos.writeInt(secretMessage.length);
-                    dos.flush();
-                    dos.write(secretMessage);
-                    dos.flush();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
                     System.out.println(this.getName());
                     coo.release();
                 }
+                dos.writeInt(secretMessage.length);
+                dos.flush();
+                dos.write(secretMessage);
+                dos.flush();
 
 //                Command c = new Command(s1, s);
 //                coo.addToQueue(c);

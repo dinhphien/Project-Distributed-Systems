@@ -1,0 +1,5 @@
+-Bỏ tất cả các file php vào 1 thư mục, chạy bằng cách mở buy.php
+- Bấm go để xem chi tiết sản phẩm
+- add to cart để thêm vào giỏ hàng
+- view cart để xem giỏ hàng
+- có thể sửa số lượng và xóa sản phẩm trong giao diện giỏ hàng

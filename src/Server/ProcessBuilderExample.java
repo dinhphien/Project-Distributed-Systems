@@ -45,7 +45,7 @@ public class ProcessBuilderExample {
 //    commands.add("8.8.8.8");
 // execute the command
         SystemCommandExecutor commandExecutor;
-                   
+
         commandExecutor = new SystemCommandExecutor(commands, file);
         int result = commandExecutor.executeCommand();
 
@@ -61,12 +61,16 @@ public class ProcessBuilderExample {
         System.out.println(stdout.toString().length());
         System.out.println("STDERR:");
         System.out.println(stderr);
-        if (s1[0].equals("cd")) {
+        if (stdout.length() > 0) {
             stdout.setLength(stdout.length() - 1);
-            this.file = new File(stdout.toString());
+        }
+        File f = new File(stdout.toString());
+        if (s1[0].equals("cd") && f.isDirectory()) {
+
+            this.file = f;
 
         }
-        if (!stdout.toString().equals("")&&stderr.toString().equals("")) {
+        if (!stdout.toString().equals("") && stderr.toString().equals("")) {
             return stdout.toString();
         }
         return stderr.toString();

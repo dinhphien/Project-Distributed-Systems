@@ -128,7 +128,6 @@ public class SystemCommandExecutor {
         try {
             return inputStreamHandler.getOutputBuffer();
         } catch (Exception e) {
-            e.printStackTrace();
             return new StringBuilder("Check your command");
         }
     }
@@ -140,8 +139,8 @@ public class SystemCommandExecutor {
         try {
             return errorStreamHandler.getOutputBuffer();
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+      
+            return new StringBuilder();
         }
     }
 

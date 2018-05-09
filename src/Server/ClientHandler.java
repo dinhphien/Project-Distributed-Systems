@@ -5,7 +5,6 @@
  */
 package Server;
 
-import static Client.Client.secret;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -27,10 +26,10 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class ClientHandler extends Thread {
 
-    static KeyPair keypair;
-    static KeyPairGenerator keygen;
+    KeyPair keypair;
+    KeyPairGenerator keygen;
     static Coodinator coo;
-    public static byte[] secret;
+    public byte[] secret;
     Socket s = null;
     CommandExcutor comm;
 

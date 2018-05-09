@@ -24,11 +24,11 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class Client {
 
-    static KeyPair keypair;
-    static KeyPairGenerator keygen;
-    public static byte[] secret;
-
     public static void main(String args[]) {
+        KeyPair keypair = null;
+        KeyPairGenerator keygen;
+        byte[] secret;
+
         try {
             Socket s = new Socket("127.0.0.1", 8333);
             DataInputStream dis = new DataInputStream(s.getInputStream());

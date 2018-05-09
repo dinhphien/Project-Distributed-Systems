@@ -59,6 +59,34 @@ public class Client {
             decrypt.init(Cipher.DECRYPT_MODE, keySpec);
             System.out.println("Completed connection!");
             Scanner sc = new Scanner(System.in);
+            String accept = "no";
+            while(!accept.equals("ok")){  
+               int i = dis.readInt();
+                //System.out.println(i);
+                byte[] b = new byte[i];
+                dis.read(b);
+                String s3 = new String(decrypt.doFinal(b));
+                System.out.println(s3);
+                String account = sc.nextLine();
+                byte[] secretMessage = encrypt.doFinal(account.getBytes());
+                dos.writeInt(secretMessage.length);
+                dos.flush();
+                dos.write(secretMessage);
+                dos.flush();
+                               i = dis.readInt();
+                //System.out.println(i);
+                 b = new byte[i];
+                dis.read(b);
+                s3 = new String(decrypt.doFinal(b));
+                System.out.println(s3);
+                String passw = sc.nextLine();
+                secretMessage = encrypt.doFinal(account.getBytes());
+                dos.writeInt(secretMessage.length);
+                dos.flush();
+                dos.write(secretMessage);
+                dos.flush();
+                
+            }
             while (true) {
                 String s2 = sc.nextLine();
                 byte[] secretMessage = encrypt.doFinal(s2.getBytes());

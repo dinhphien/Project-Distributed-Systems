@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jdk.nashorn.internal.objects.NativeString;
+
 
 /**
  *
@@ -73,16 +73,16 @@ public class CommandExcutor {
         return date.toString();
     }
 
-    public String showDir(File file) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        File[] files = file.listFiles();
-        for (int i = 0; i < files.length; i++) {;
-            if (files[i].isDirectory()) {
-                sb.append(" [Dir]" + files[i].getName() + "\n");
-            } else {
-                sb.append(files[i].getName() + "\n");
-            }
-        }
-        return sb.toString();
-    }
+//    public String showDir(File file) throws IOException {
+//        StringBuilder sb = new StringBuilder();
+//        File[] files = file.listFiles();
+//        for (int i = 0; i < files.length; i++) {;
+//            if (files[i].isDirectory()) {
+//                sb.append(" [Dir]" + files[i].getName() + "\n");
+//            } else {
+//                sb.append(files[i].getName() + "\n");
+//            }
+//        }
+//        return sb.toString();
+//    }
 }

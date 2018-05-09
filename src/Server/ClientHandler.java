@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -19,7 +21,7 @@ import java.util.logging.Logger;
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
 import javax.crypto.spec.SecretKeySpec;
-
+import Server.DB;
 /**
  *
  * @author T430
@@ -48,6 +50,11 @@ public class ClientHandler extends Thread {
 
     public void run() {
         try {
+            s.setSoTimeout(3000);
+        } catch (SocketException ex) {
+            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
 //            coo.listen();
             DataInputStream dis = new DataInputStream(s.getInputStream());
             DataOutputStream dos = new DataOutputStream(s.getOutputStream());
@@ -75,36 +82,85 @@ public class ClientHandler extends Thread {
             encrypt.init(Cipher.ENCRYPT_MODE, keySpec);
             final Cipher decrypt = Cipher.getInstance("DES/ECB/PKCS5Padding");
             decrypt.init(Cipher.DECRYPT_MODE, keySpec);
-            while (true) {
+            boolean user = false;
+            while (!user) {
+                String message = "Nhap tai khoan";
+                byte[] mess = encrypt.doFinal(message.getBytes());
+                dos.writeInt(mess.length);
+                dos.flush();
+                dos.write(mess);
+                dos.flush();
                 int i = dis.readInt();
                 //System.out.println(i);
                 byte[] b = new byte[i];
                 dis.read(b);
-                String s = new String(decrypt.doFinal(b));
-                byte[] secretMessage = null;
-                try {
-                    coo.accquire();
-                    secretMessage = encrypt.doFinal(comm.excute(s).getBytes());
-                    coo.release();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    System.out.println(this.getName());
-                    coo.release();
+                String account = new String(decrypt.doFinal(b));
+                message = "Nhap mat khau";
+                mess = encrypt.doFinal(message.getBytes());
+                dos.writeInt(mess.length);
+                dos.flush();
+                dos.write(mess);
+                dos.flush();
+                i = dis.readInt();
+                //System.out.println(i);
+                b = new byte[i];
+                dis.read(b);
+                String passw = new String(decrypt.doFinal(b));
+//                System.out.println(account + " " + passw);
+                DB db= new DB();
+                if (db.check(account,passw)) {
+                    message = "ok";
+                    mess = encrypt.doFinal(message.getBytes());
+                    dos.writeInt(mess.length);
+                    dos.flush();
+                    dos.write(mess);
+                    dos.flush();
+                    break;
                 }
-                dos.writeInt(secretMessage.length);
-                dos.flush();
-                dos.write(secretMessage);
-                dos.flush();
+            }
+            while (true) {
+                try {
+                    int i = dis.readInt();
+                    //System.out.println(i);
+                    byte[] b = new byte[i];
+                    dis.read(b);
+                    String s = new String(decrypt.doFinal(b));
+                    if (s.equals("quit")) {
+//                    dos.writeUTF("Client: bye!");;
+//                    dos.flush();
+                        System.out.println("a client exit");
+                        Server.downCount();
+                        break;
+                    }
+                    byte[] secretMessage = null;
+                    try {
+                        coo.accquire();
+                        secretMessage = encrypt.doFinal(comm.excute(s).getBytes());
+                        coo.release();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        System.out.println(this.getName());
+                        coo.release();
+                    }
+                    dos.writeInt(secretMessage.length);
+                    dos.flush();
+                    dos.write(secretMessage);
+                    dos.flush();
 
 //                Command c = new Command(s1, s);
 //                coo.addToQueue(c);
 //                
-                if (s.equals("quit")) {
-//                    dos.writeUTF("Client: bye!");;
-//                    dos.flush();
-                    System.out.println("exit");
+                } catch (SocketTimeoutException e) {
+
+                    String s = "Timeout. Bye";
+                    byte[] mess = encrypt.doFinal(s.getBytes());
+                    dos.writeInt(mess.length);
+                    dos.flush();
+                    dos.write(mess);
+                    dos.flush();
+                    System.out.println("a client exit");
                     Server.downCount();
                     break;
                 }

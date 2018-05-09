@@ -33,6 +33,10 @@ public class Server {
         count--;
     }
 
+    public static int getCount() {
+        return count;
+    }
+
     public static void main(String args[]) throws IOException {
         ServerSocket listener = null;
         Coodinator coo = new Coodinator();

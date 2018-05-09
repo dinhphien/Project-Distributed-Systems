@@ -10,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -59,9 +60,18 @@ public class Client {
             decrypt.init(Cipher.DECRYPT_MODE, keySpec);
             System.out.println("Completed connection!");
             Scanner sc = new Scanner(System.in);
-            String accept = "no";
-            while(!accept.equals("ok")){  
-               int i = dis.readInt();
+            String accept;
+            int x = dis.readInt();
+            //System.out.println(i);
+            byte[] z = new byte[x];
+            dis.read(z);
+            accept = new String(decrypt.doFinal(z));
+            System.out.println(accept);
+            if (!accept.equals("ok")) {
+                System.exit(0);
+            }
+            while (true) {
+                int i = dis.readInt();
                 //System.out.println(i);
                 byte[] b = new byte[i];
                 dis.read(b);
@@ -73,30 +83,43 @@ public class Client {
                 dos.flush();
                 dos.write(secretMessage);
                 dos.flush();
-                               i = dis.readInt();
+                i = dis.readInt();
                 //System.out.println(i);
-                 b = new byte[i];
+                b = new byte[i];
                 dis.read(b);
                 s3 = new String(decrypt.doFinal(b));
                 System.out.println(s3);
                 String passw = sc.nextLine();
-                secretMessage = encrypt.doFinal(account.getBytes());
+                secretMessage = encrypt.doFinal(passw.getBytes());
                 dos.writeInt(secretMessage.length);
                 dos.flush();
                 dos.write(secretMessage);
                 dos.flush();
-                
+                i = dis.readInt();
+                //System.out.println(i);
+                b = new byte[i];
+                dis.read(b);
+                accept = new String(decrypt.doFinal(b));
+                System.out.println(accept);
+                if (accept.equals("ok")) {
+                    break;
+                }
             }
+
+            System.out.println("Log in succesful");
             while (true) {
+
+                System.out.print("-->");
                 String s2 = sc.nextLine();
                 byte[] secretMessage = encrypt.doFinal(s2.getBytes());
                 dos.writeInt(secretMessage.length);
                 dos.flush();
                 dos.write(secretMessage);
                 dos.flush();
-
                 if (s2.equals("quit")) {
+                    System.out.println("quit");
                     break;
+
                 }
                 int i = dis.readInt();
                 //System.out.println(i);
@@ -104,11 +127,13 @@ public class Client {
                 dis.read(b);
                 String s3 = new String(decrypt.doFinal(b));
                 System.out.println(s3);
-                System.out.print("-->");
+
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            System.out.println("Co loi xay ra. Stop");
+            System.exit(0);
         }
     }
 }
